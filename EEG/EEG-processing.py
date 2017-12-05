@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -48,7 +47,7 @@ freq_dict = {'ALPHA_MAX':12,
              'THETA_MIN':4}
              
 #Get data for each header
-data = pd.read_csv('Records/EEG_ivan_2.csv', sep=',', header=1)
+data = pd.read_csv('Records/EEG_videos_i2.csv', sep=',', header=1)
 data = data.as_matrix()
 data = np.delete(data, np.s_[-1:], axis=1)
 

@@ -1,29 +1,32 @@
-import csv
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.fftpack import fft
+from scipy.fftpack import fft, ifft, fftshift, fftfreq
+from scipy.signal import hamming, hann, kaiser
 
-with open('Records/EEGLogger.csv', 'r') as f:  #opens PW file
-    reader = csv.reader(f)
-    
-""" Simple Python code
-    #First line = field names
-    #Next lines = one-sample values for previous fields
-    for row in reader:
-        print row
-"""
+def to_seconds(positions, fs):
+	return np.multiply(positions, 1.0/fs)
+	
+def to_microvolts(values):
+    return np.multiply(values, 0.51)
 
-# Code with numpy
-headers = np.genfromtxt('Records/EEGLogger.csv', dtype=None, delimiter=',')[0]
-data = np.genfromtxt('Records/EEGLogger.csv', dtype=None, delimiter=',', names=True) 
-field_limit = len(headers) - 1
-headers = np.delete(headers, field_limit)
-print headers
-print data.shape
-#data = np.delete(a, np.s_[-1:], axis=1)
-#for i in np.arange(data.shape[0]):
-    #data[i] = np.delete(data[i], field_limit)
-    #print data[i]
+#Get data for each header
+data = pd.read_csv('Records/EEG_videos_i2.csv', sep=',', header=1)
+data = data.as_matrix()
+data = np.delete(data, np.s_[-1:], axis=1)
 
+#(N/fs)-second(s) domain
+fs = 128
+N = 1280
+##10-second groups at 128Hz
+groups = data.shape[0] / N
+n1 = to_seconds(np.arange(0, data.shape[0]), fs)
+npwr = n1[640:-N:N]
+n2 = fftfreq(N, 1.0/fs)
+nfreq = n2[:N/2]
 
+plt.xlabel('Time (seconds)')
+plt.ylabel('Raw data\n(one sensor)')
+plt.plot(n1, data, 'k')
 
+plt.show()
